@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F5B8C8">
+<title>SPILL. — Less small talk.</title>
+<style>
+:root{--pink:#F5B8C8;--red:#E63946;--cream:#FFF9EF;--brown:#49372F;--yellow:#F8E36B;--olive:#89966B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pink);color:var(--brown);font-family:Arial,sans-serif}
+main{min-height:100dvh;max-width:520px;margin:auto;padding:28px 22px;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column;gap:20px}
+.screen.active{display:flex}
+.logo{font-family:Arial Black,Arial,sans-serif;font-size:clamp(76px,20vw,125px);font-weight:1000;letter-spacing:-.105em;line-height:.95;color:var(--red);transform:rotate(-4deg);margin:60px 0 10px}
+h1{font-size:clamp(36px,9vw,56px);line-height:.98;letter-spacing:-.06em;margin:25px 0 8px;font-weight:900}
+p{line-height:1.5}
+.tagline{font-size:23px;font-family:Georgia,serif;font-style:italic}
+button{border:0;border-radius:50px;padding:18px 22px;background:var(--red);color:white;font-weight:800;font-size:15px;cursor:pointer;min-height:54px}
+button:focus-visible{outline:3px solid var(--brown);outline-offset:3px}
+button.secondary{background:var(--cream);color:var(--brown)}
+button.ghost{background:transparent;color:var(--brown);border:2px solid var(--brown)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.actions button{flex:1}
+.category{width:100%;min-height:135px;text-align:left;border-radius:42% 58% 53% 47% / 25% 39% 61% 75%;padding:28px 30px;background:var(--yellow);color:var(--brown);transform:rotate(-2deg)}
+.category:nth-of-type(2){background:var(--red);color:white;transform:rotate(2deg)}
+.category:nth-of-type(3){background:var(--olive);color:white}
+.category strong{display:block;font-size:23px;line-height:1.1}
+.category small{display:block;font-size:13px;margin-top:8px;font-weight:400}
+.card{flex:1;min-height:340px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:45px 32px;background:var(--cream);border-radius:42% 58% 51% 49% / 35% 32% 68% 65%;transform:rotate(-2deg)}
+.card p{font-family:Georgia,serif;font-size:clamp(25px,6vw,36px);line-height:1.23;transform:rotate(2deg)}
+.eyebrow{font-size:12px;letter-spacing:.14em;font-weight:800}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top button{padding:12px;min-height:44px}
+#questionScreen{background:transparent}
+#savedList{display:grid;gap:12px}
+.saved{background:var(--cream);padding:20px;border-radius:22px}
+.saved button{margin-top:8px}
+footer{font-size:12px;text-align:center;margin-top:auto;padding:18px;opacity:.7}
+</style>
+</head>
+<body>
+<main>
+<section id="welcome" class="screen active">
+<div class="logo">SPILL.</div>
+<p class="tagline">Less small talk.<br>More SPILL.</p>
+<div class="actions"><button onclick="show('categories')">LET'S SPILL →</button></div>
+<footer>Good company always spills something interesting.</footer>
+</section>
+<section id="categories" class="screen">
+<div class="top"><span class="eyebrow">SPILL.</span><button class="secondary" onclick="show('saved')">♡ SAVED</button></div>
+<h1>WHAT ARE WE SPILLING?</h1>
+<p>Pick a topic. See where it takes you.</p>
+<button class="category" onclick="start('thought')"><strong>FOOD FOR THOUGHT</strong><small>For the things you've never really thought about.</small></button>
+<button class="category" onclick="start('surface')"><strong>UNDER THE SURFACE</strong><small>There's always more to the story.</small></button>
+<button class="category" onclick="start('grey')"><strong>THE GREY AREA</strong><small>Not everything is black and white.</small></button>
+<button class="ghost" onclick="start('mix')">MIX IT UP ↗</button>
+</section>
+<section id="questionScreen" class="screen">
+<div class="top"><button class="secondary" onclick="show('categories')">← CATEGORIES</button><button class="secondary" onclick="show('saved')">♡ SAVED</button></div>
+<h1>TIME TO SPILL.</h1>
+<div class="card" id="questionCard"><span class="eyebrow" id="categoryName"></span><p id="questionText"></p></div>
+<button id="otherButton" class="ghost" onclick="toggleOther()">SEE THE OTHER SIDE ↗</button>
+<div class="actions">
+<button class="secondary" onclick="previous()">← BACK</button>
+<button class="secondary" onclick="saveQuestion()">♡ SAVE</button>
+<button onclick="next()">KEEP SPILLING →</button>
+</div>
+<button class="ghost" onclick="show('end')">END SESSION</button>
+</section>
+<section id="saved" class="screen">
+<div class="top"><button class="secondary" onclick="show('categories')">← BACK</button></div>
+<h1>WORTH SPILLING AGAIN.</h1>
+<div id="savedList"></div>
+</section>
+<section id="end" class="screen">
+<h1>WELL, THAT WAS REVEALING.</h1>
+<p class="tagline">Good company always spills something interesting.</p>
+<div class="actions"><button onclick="show('categories')">ONE MORE ROUND →</button><button class="secondary" onclick="show('welcome')">CALL IT A NIGHT</button></div>
+</section>
+</main>
+<script>
+const questions=[
+{id:1,c:'thought',q:'Do you think people can fundamentally change?',o:'If people can change, why do we find it so difficult to forgive their past?'},
+{id:2,c:'thought',q:'Is happiness something you find or something you create?'},
+{id:3,c:'thought',q:'Do you think we ever truly know another person?'},
+{id:4,c:'thought',q:'If you could know exactly how your life turns out, would you want to?'},
+{id:5,c:'surface',q:'What is a version of yourself you sometimes miss?'},
+{id:6,c:'surface',q:'What is something about your childhood that you appreciate more as an adult?'},
+{id:7,c:'surface',q:'What is a part of your personality people often misunderstand?'},
+{id:8,c:'surface',q:'Have you ever outgrown a friendship but struggled to admit it?',o:'Is outgrowing someone always growth, or can it mean you stopped making an effort?'},
+{id:9,c:'grey',q:'Is honesty always the best policy, even when it causes unnecessary hurt?',o:'Can withholding the truth sometimes be an act of kindness?'},
+{id:10,c:'grey',q:'Do people owe their parents anything simply because they raised them?'},
+{id:11,c:'grey',q:'Can you be a good person and still be a bad friend?'},
+{id:12,c:'grey',q:'Is loyalty still admirable when someone does not deserve it?'}
+];
+const names={thought:'FOOD FOR THOUGHT',surface:'UNDER THE SURFACE',grey:'THE GREY AREA'};
+const colors={thought:'#F8E36B',surface:'#E63946',grey:'#89966B'};
+let deck=[],history=[],position=-1,other=false;
+let favourites=[];
+try{favourites=JSON.parse(localStorage.getItem('spill-favourites')||'[]')}catch(e){}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='saved')renderSaved()}
+function start(c){deck=questions.filter(q=>c==='mix'||q.c===c).sort(()=>Math.random()-.5);history=[];position=-1;next();show('questionScreen')}
+function current(){return history[position]}
+function render(){let q=current();if(!q)return;document.getElementById('categoryName').textContent=other?'THE OTHER SIDE':names[q.c];document.getElementById('questionText').textContent=other?q.o:q.q;document.getElementById('questionCard').style.background=other?'#49372F':colors[q.c];document.getElementById('questionCard').style.color=other?'#FFF9EF':q.c==='thought'?'#49372F':'white';document.getElementById('otherButton').hidden=!q.o;document.getElementById('otherButton').textContent=other?'← ORIGINAL QUESTION':'SEE THE OTHER SIDE ↗'}
+function next(){if(position<history.length-1){position++;other=false;render();return}if(!deck.length){alert('You have spilled every question in this category!');show('end');return}history.push(deck.pop());position++;other=false;render()}
+function previous(){if(position>0){position--;other=false;render()}}
+function toggleOther(){if(current()?.o){other=!other;render()}}
+function saveQuestion(){let q=current();if(!q)return;if(!favourites.includes(q.id)){favourites.push(q.id);localStorage.setItem('spill-favourites',JSON.stringify(favourites))}alert('Saved to your favourites ♡')}
+function renderSaved(){let el=document.getElementById('savedList');el.replaceChildren();if(!favourites.length){el.textContent='Nothing saved yet. Find a question worth spilling again!';return}favourites.map(id=>questions.find(q=>q.id===id)).filter(Boolean).forEach(q=>{let div=document.createElement('div');div.className='saved';let title=document.createElement('strong');title.textContent=names[q.c];let p=document.createElement('p');p.textContent=q.q;let b=document.createElement('button');b.className='secondary';b.textContent='REMOVE ♡';b.onclick=()=>{favourites=favourites.filter(id=>id!==q.id);localStorage.setItem('spill-favourites',JSON.stringify(favourites));renderSaved()};div.append(title,p,b);el.append(div)})}
+</script>
+</body>
+</html>
