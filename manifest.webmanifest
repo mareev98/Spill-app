@@ -1,0 +1,15 @@
+{
+  "id": "./",
+  "name": "SPILL — Less small talk. More SPILL.",
+  "short_name": "SPILL",
+  "description": "A conversation card game for deeper connections.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#f5b8c8",
+  "background_color": "#f5b8c8",
+  "icons": [
+    {"src": "./icons/spill-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "./icons/spill-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
